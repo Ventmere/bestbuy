@@ -1,0 +1,7 @@
+[workspace]
+members = [
+  "bestbuy",
+  "bestbuy_cli"
+]
+[patch.crates-io]
+bestbuy = { path = "./bestbuy" }
