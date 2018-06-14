@@ -1,6 +1,6 @@
 [package]
 name = "bestbuy"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Flux Xu <fluxxu@gmail.com>"]
 description = "Bestbuy Marketplace API client."
 license = "MIT"

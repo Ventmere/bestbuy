@@ -98,6 +98,7 @@ state_enum! {
     WaitingDebit,
     WaitingDebitPayment,
     Shipping,
+    Shipped,
     ToCollect,
     Received,
     Closed,

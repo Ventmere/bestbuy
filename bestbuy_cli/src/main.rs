@@ -54,7 +54,7 @@ fn main() {
             use chrono::{Utc, Duration};
             let client = helpers::get_client();
             let mut params = ListOrdersParams::default();
-            params.start_date = Some(Utc::now() - Duration::days(1));
+            params.start_date = Some(Utc::now() - Duration::days(7));
             helpers::dump_json(client.list_orders(
               &params,
               None,
