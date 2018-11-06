@@ -1,6 +1,6 @@
 use reqwest::{Client, Response, StatusCode};
 pub use reqwest::{Method, RequestBuilder};
-use result::{BestbuyResult, ErrorKind};
+use result::{BestbuyError, BestbuyResult};
 use serde::Deserialize;
 use serde_json;
 
@@ -22,8 +22,10 @@ impl BestbuyClient {
   }
 
   pub fn request(&self, method: Method, path: &str) -> RequestBuilder {
-    use reqwest::{header::{qitem, Accept, Authorization, CacheControl, CacheDirective},
-                  mime};
+    use reqwest::{
+      header::{qitem, Accept, Authorization, CacheControl, CacheDirective},
+      mime,
+    };
     let mut b = self
       .http
       .request(method, &format!("https://marketplace.bestbuy.ca{}", path));
@@ -43,12 +45,21 @@ impl BestbuyResponse for Response {
     let body = self.text()?;
 
     if self.status() != StatusCode::Ok {
-      return Err(ErrorKind::Request(self.url().to_string(), self.status(), body).into());
+      return Err(BestbuyError::Request {
+        path: self.url().to_string(),
+        status: self.status(),
+        body,
+      });
     }
 
     match serde_json::from_str(&body) {
       Ok(v) => Ok(v),
-      Err(err) => return Err(ErrorKind::Deserialize(err.to_string(), body).into()),
+      Err(err) => {
+        return Err(BestbuyError::Deserialize {
+          msg: err.to_string(),
+          body,
+        })
+      }
     }
   }
 }

@@ -1,21 +1,51 @@
 use reqwest::StatusCode;
 
-error_chain! {
-  errors {
-    Request(path: String, status: StatusCode, body: String) {
-      description("request error")
-      display("request error: path = '{}', status = '{}', body = '{}'", path, status, body)
-    }
-    Deserialize(msg: String, body: String) {
-      description("deserialize body error")
-      display("deserialize body error: {}, body = '{}'", msg, body)
-    }
-  }
+#[derive(Fail, Debug)]
+pub enum BestbuyError {
+  #[fail(
+    display = "request error: path = '{}', status = '{}', body = '{}'",
+    path, status, body
+  )]
+  Request {
+    path: String,
+    status: StatusCode,
+    body: String,
+  },
 
-  foreign_links {
-    Http(::reqwest::Error);
-    Json(::serde_json::Error);
+  #[fail(display = "deserialize body error: msg = '{}', body = '{}'", msg, body)]
+  Deserialize { msg: String, body: String },
+
+  #[fail(display = "http error: {}", _0)]
+  Http(::reqwest::Error),
+
+  #[fail(display = "json error: {}", _0)]
+  Json(::serde_json::Error),
+}
+
+impl BestbuyError {
+  pub fn should_try_again(&self) -> bool {
+    match *self {
+      BestbuyError::Request { status, .. } => {
+        let code = status.as_u16();
+        // 429 Too Many Requests
+        code == 429 || code == 500 || code == 503
+      }
+      _ => false,
+    }
   }
 }
 
-pub type BestbuyResult<T> = ::std::result::Result<T, Error>;
+pub type BestbuyResult<T> = ::std::result::Result<T, BestbuyError>;
+
+macro_rules! impl_from {
+  ($v:ident($t:ty)) => {
+    impl From<$t> for BestbuyError {
+      fn from(e: $t) -> Self {
+        BestbuyError::$v(e)
+      }
+    }
+  };
+}
+
+impl_from!(Http(::reqwest::Error));
+impl_from!(Json(::serde_json::Error));

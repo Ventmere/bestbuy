@@ -1,6 +1,7 @@
 extern crate chrono;
+extern crate failure;
 #[macro_use]
-extern crate error_chain;
+extern crate failure_derive;
 #[macro_use]
 extern crate serde_derive;
 extern crate reqwest;
