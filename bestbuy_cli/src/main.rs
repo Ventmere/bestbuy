@@ -22,7 +22,7 @@ macro_rules! dispatch {
 
   (ITEM $matches:expr, ($cmd:ident => $($sub:tt)+)) => {
     if let Some(matches) = $matches.subcommand_matches(stringify!($cmd)) {
-      dispatch!(matches => $($sub)*); 
+      dispatch!(matches => $($sub)*);
     }
   };
 }
@@ -43,7 +43,16 @@ fn main() {
         (@arg ORDER_ID: +required "Bestbuy order id")
       )
     )
-  ).get_matches();
+    (@subcommand offer =>
+      (about: "Manage offers")
+      (@subcommand dump =>
+      )
+      (@subcommand deserialize_all =>
+        (@arg FILE: +required "File path")
+      )
+    )
+  )
+  .get_matches();
 
   dispatch! {
     matches =>
@@ -102,6 +111,49 @@ fn main() {
               None,
               None,
             ).unwrap().orders.pop().unwrap())
+          })
+        )
+      )
+      (offer =>
+        (dump =>
+          (|_| {
+            use bestbuy::client::Method;
+            use serde_json::{self, Value};
+            let client = helpers::get_client();
+
+            let mut items = vec![];
+            loop {
+              let mut res = client.request(Method::Get, &format!(
+                 "/api/offers?max=100&offset={}", items.len()
+              )).send().unwrap();
+              let value: serde_json::Value = res.json().unwrap();
+              let mut page_items: Vec<Value> = value.as_object()
+                .and_then(|v| v.get("offers"))
+                .and_then(|v| v.as_array())
+                .unwrap()
+                .clone();
+              if page_items.is_empty() {
+                break
+              }
+              items.append(&mut page_items);
+            }
+            serde_json::to_writer_pretty(::std::io::stdout(), &items).unwrap();
+          })
+        )
+
+        (deserialize_all =>
+          (|m| {
+            use bestbuy::offer::Offer;
+            use std::fs::File;
+            use serde_json::{self, Value};
+            let path = m.value_of("FILE").unwrap();
+            let file = File::open(path).unwrap();
+            let values: Vec<Value> = serde_json::from_reader(file).unwrap();
+            let len = values.len();
+            for (i, v) in values.into_iter().enumerate() {
+              println!("testing {} of {}...", i + 1, len);
+              serde_json::from_value::<Offer>(v.clone()).unwrap();
+            }
           })
         )
       )

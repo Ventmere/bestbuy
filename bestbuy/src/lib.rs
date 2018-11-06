@@ -14,5 +14,6 @@ mod types;
 
 pub use self::types::*;
 pub mod client;
+pub mod offer;
 pub mod order;
 pub mod result;
