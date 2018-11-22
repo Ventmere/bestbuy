@@ -1,11 +1,12 @@
 use serde::ser::{Serialize, SerializeStruct, Serializer};
 
-#[derive(Serialize)]
+#[derive(Debug, Serialize)]
 pub struct Pagination {
   pub max: Option<i32>,
   pub offset: Option<i32>,
 }
 
+#[derive(Debug)]
 pub enum Sort<K: Serialize> {
   Asc(K),
   Desc(K),
