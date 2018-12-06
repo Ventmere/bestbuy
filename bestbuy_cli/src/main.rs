@@ -42,6 +42,13 @@ fn main() {
         (about: "Display order items and statuses")
         (@arg ORDER_ID: +required "Bestbuy order id")
       )
+      (@subcommand ship =>
+        (about: "ship order")
+        (@arg ORDER_ID: +required "Sets the order id")
+        (@arg carrier_code: -c --carrier_code +takes_value "Sets the carrier code")
+        (@arg tracking_number: -t --tracking_number +takes_value "Sets the tracking number")
+        (@arg tracking_url: -u --tracking_url +takes_value "Sets the tracking url")
+      )
     )
     (@subcommand offer =>
       (about: "Manage offers")
@@ -111,6 +118,40 @@ fn main() {
               None,
               None,
             ).unwrap().orders.pop().unwrap())
+          })
+        )
+
+        (ship =>
+          (|m| {
+            use bestbuy::order::*;
+            let order_id = m.value_of("ORDER_ID").unwrap();
+            let client = helpers::get_client();
+            let carrier_code = m.value_of("carrier_code").and_then(|code| {
+              match code.trim().to_lowercase().as_ref() {
+                "canada post" => Some(CarrierCode::CPCL),
+                "purolator" => Some(CarrierCode::PRLA),
+                "ups" => Some(CarrierCode::UPSN),
+                "fedex" => Some(CarrierCode::FEDX),
+                "dhl" => Some(CarrierCode::DHL),
+                _ => None,
+              }
+            });
+            let (carrier_name, carrier_url) = if let None = carrier_code.as_ref() {
+              (
+                m.value_of("carrier_code").map(ToString::to_string),
+                m.value_of("tracking_url").map(ToString::to_string)
+              )
+            } else {
+              (None, None)
+            };
+            let t = OrderTracking {
+              carrier_code,
+              carrier_name,
+              carrier_url,
+              tracking_number: m.value_of("tracking_number").map(ToString::to_string),
+            };
+            client.update_tracking(&order_id, &t).expect("update_tracking");
+            client.ship(&order_id).expect("ship");
           })
         )
       )

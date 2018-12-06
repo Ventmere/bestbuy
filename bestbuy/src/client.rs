@@ -1,4 +1,4 @@
-use reqwest::{Client, Response, StatusCode};
+use reqwest::{Client, Response};
 pub use reqwest::{Method, RequestBuilder};
 use result::{BestbuyError, BestbuyResult};
 use serde::Deserialize;
@@ -38,13 +38,14 @@ impl BestbuyClient {
 
 pub trait BestbuyResponse {
   fn get_response<T: for<'de> Deserialize<'de>>(&mut self) -> BestbuyResult<T>;
+  fn no_content(&mut self) -> BestbuyResult<()>;
 }
 
 impl BestbuyResponse for Response {
   fn get_response<T: for<'de> Deserialize<'de>>(&mut self) -> BestbuyResult<T> {
     let body = self.text()?;
 
-    if self.status() != StatusCode::Ok {
+    if !self.status().is_success() {
       return Err(BestbuyError::Request {
         path: self.url().to_string(),
         status: self.status(),
@@ -61,5 +62,18 @@ impl BestbuyResponse for Response {
         })
       }
     }
+  }
+
+  fn no_content(&mut self) -> BestbuyResult<()> {
+    let body = self.text()?;
+
+    if !self.status().is_success() {
+      return Err(BestbuyError::Request {
+        path: self.url().to_string(),
+        status: self.status(),
+        body,
+      });
+    }
+    Ok(())
   }
 }

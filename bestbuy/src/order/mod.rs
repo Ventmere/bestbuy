@@ -127,7 +127,7 @@ impl OrderApi for BestbuyClient {
       .request(Method::Put, &format!("/api/orders/{}/accept", order_id))
       .json(accept)
       .send()?
-      .get_response()
+      .no_content()
   }
 
   fn update_tracking(&self, order_id: &str, tracking: &OrderTracking) -> BestbuyResult<()> {
@@ -135,13 +135,13 @@ impl OrderApi for BestbuyClient {
       .request(Method::Put, &format!("/api/orders/{}/tracking", order_id))
       .json(tracking)
       .send()?
-      .get_response()
+      .no_content()
   }
 
   fn ship(&self, order_id: &str) -> BestbuyResult<()> {
     self
       .request(Method::Put, &format!("/api/orders/{}/ship", order_id))
       .send()?
-      .get_response()
+      .no_content()
   }
 }
