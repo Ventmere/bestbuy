@@ -6,7 +6,7 @@ mod types;
 
 pub use self::types::*;
 
-#[derive(Serialize)]
+#[derive(Debug, Clone, Copy, Serialize)]
 pub enum OrderSort {
   #[serde(rename = "dateCreated")]
   DateCreated,
@@ -16,7 +16,7 @@ use types::{Pagination, Sort};
 
 pub type ListOrdersSort = Sort<OrderSort>;
 
-#[derive(Default, Serialize, Clone)]
+#[derive(Debug, Default, Serialize, Clone)]
 pub struct ListOrdersParams {
   pub order_ids: Option<Vec<String>>,
   pub order_state_codes: Option<Vec<OrderState>>,
@@ -28,25 +28,25 @@ pub struct ListOrdersParams {
   pub paginate: Option<bool>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ListOrdersResponse {
   pub orders: Vec<Order>,
   pub total_count: i32,
 }
 
-#[derive(Serialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct OrderAccept {
   pub order_lines: Vec<OrderAcceptLine>,
 }
 
-#[derive(Serialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct OrderAcceptLine {
   pub accepted: bool,
   pub id: String,
 }
 
 #[allow(non_camel_case_types)]
-#[derive(Serialize)]
+#[derive(Debug, Serialize, Clone, Copy, PartialEq)]
 pub enum CarrierCode {
   CPCL,
   ASYN,
@@ -59,7 +59,7 @@ pub enum CarrierCode {
   CPAR,
 }
 
-#[derive(Serialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct OrderTracking {
   pub carrier_code: Option<CarrierCode>,
   pub carrier_name: Option<String>,

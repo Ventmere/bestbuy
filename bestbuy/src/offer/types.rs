@@ -1,7 +1,7 @@
 use chrono::{DateTime, Utc};
 use serde_json::Value;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Offer {
   pub active: bool,
   pub available_end_date: Option<DateTime<Utc>>,
@@ -34,7 +34,7 @@ pub struct Offer {
   pub total_price: f64,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Discount {
   pub start_date: DateTime<Utc>,
   pub end_date: DateTime<Utc>,
@@ -43,13 +43,13 @@ pub struct Discount {
   pub ranges: Vec<Range>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Range {
   pub price: f64,
   pub quantity_threshold: i64,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ApplicablePricing {
   pub channel_code: Option<Value>,
   pub discount_end_date: Option<Value>,
@@ -60,7 +60,7 @@ pub struct ApplicablePricing {
   pub volume_prices: Vec<VolumePrice>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct VolumePrice {
   pub price: f64,
   pub quantity_threshold: i64,
@@ -68,13 +68,13 @@ pub struct VolumePrice {
   pub unit_origin_price: f64,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct LogisticClass {
   pub code: String,
   pub label: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct OfferAdditionalField {
   pub code: String,
   #[serde(rename = "type")]
@@ -82,7 +82,7 @@ pub struct OfferAdditionalField {
   pub value: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ProductReference {
   pub reference: String,
   pub reference_type: String,

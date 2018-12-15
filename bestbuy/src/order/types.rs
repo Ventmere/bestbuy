@@ -17,7 +17,7 @@ state_enum! {
   }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Order {
   pub acceptance_decision_date: Option<String>,
   pub can_cancel: bool,
@@ -56,13 +56,13 @@ pub struct Order {
   pub total_price: f64,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Channel {
   pub code: Option<String>,
   pub label: Option<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Address {
   pub city: String,
   pub civility: String,
@@ -80,7 +80,7 @@ pub struct Address {
   pub additional_info: Option<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Customer {
   pub billing_address: Option<Address>,
   pub civility: String,
@@ -109,7 +109,7 @@ state_enum! {
   }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct OrderLine {
   pub can_refund: bool,
   pub cancelations: Vec<Value>,
@@ -152,20 +152,20 @@ pub struct OrderLine {
   pub total_price: f64,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CommissionTax {
   pub amount: f64,
   pub code: String,
   pub rate: Option<f64>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Tax {
   pub amount: Option<f64>,
   pub code: Option<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Promotions {
   pub applied_promotions: Vec<Value>,
   pub total_deduced_amount: f64,
