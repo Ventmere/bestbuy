@@ -36,8 +36,8 @@ pub struct Offer {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Discount {
-  pub start_date: DateTime<Utc>,
-  pub end_date: DateTime<Utc>,
+  pub start_date: Option<DateTime<Utc>>,
+  pub end_date: Option<DateTime<Utc>>,
   pub discount_price: f64,
   pub origin_price: f64,
   pub ranges: Vec<Range>,
